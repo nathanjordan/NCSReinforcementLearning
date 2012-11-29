@@ -1,0 +1,300 @@
+##################################################################################
+#
+# Reinforcement Learning
+#
+# Author: Nathan Jordan
+#		Karl Mullner
+#
+##################################################################################
+#
+#
+#
+#                            __ 
+#                          ,' ,^,. 
+#                      ,-"/""/--)_\ 
+#                    ,'           /. 
+#                   ,'              \ 
+#                   |               ; 
+#                  /                | 
+#                 ,'    ,'    .     ; 
+#                (_____|_______\   : 
+#                (o___,|o      | /|, 
+#                 (    `.____,' / /.\ 
+#                 /`-----._       e ) 
+#                |         `.    |-' 
+#                |      __,-.`.  | 
+#                `--.-'\ \_\' :  | 
+#                    \_,^'   ,'  \ 
+#                    '.____,'  _,'\ 
+#                   (`-|_,-'")'  ,'\--._ 
+#                    )=(_)=  \--'       `-._ 
+#                   /`-' `---'              `. 
+#                  / /                        `-. 
+#                 / /                            `-. 
+#                : /                               `. 
+#                |( .        .       ---._          `. 
+#                |'                  ''' \`-.        | 
+#               /                         `. \       | 
+#              /                            \ :      | 
+#             /                              \)      | 
+#            /                             __/       ; 
+#           :                             (___      : 
+#           |                              ,` `.     ) )) 
+#           |       o                  _,-' ,'_/  ;;/ // 
+#           |`--.____           ___,--' _,-' (__,'-' 
+#           |`--.____`---------'____,--'       ; - -' 
+#           `.  ,' / `---,-.---'              / 
+#             \/  /      \  \         ____  ,' 
+#              `./        `. `.  _,--'    )/ 
+#               |`-.        `.,`'         / 
+#               |   `-._    /            : 
+#               :       `--|             | 
+#               |          |             | 
+#               |          |             | 
+#               |          |             | 
+#               |          |             | 
+#               |          |             : 
+#               |          |             | 
+#               |          |             | 
+#               |, --.     |             | 
+#             ,-'           :_, --.      : 
+#          _,'            _,'             \ 
+#         (,',,--    __,-/                 ) 
+#          `((___,--' ,-'             _,--' 
+#                    (_( ,',-  __,---' 
+#                       ``-`--' 
+#
+#
+###################################################################################
+
+BRAIN
+	TYPE            ReinforcementLearning
+	JOB             RL1
+	FSV             1000
+	DURATION	      30
+	SEED            -999
+	DISTANCE        NO
+
+	COLUMN_TYPE     COLUMN_1
+	
+	STIMULUS_INJECT STIM_INJECT_1
+
+	REPORT     REPORT_OUTPUT_1
+
+END_BRAIN
+
+##################################################################################
+#
+# Columns
+#
+##################################################################################
+
+COLUMN_SHELL
+    TYPE           CSHELL_1
+    WIDTH          300
+    HEIGHT         800
+    LOCATION       0	800
+END_COLUMN_SHELL
+
+COLUMN
+    TYPE           COLUMN_1
+    COLUMN_SHELL   CSHELL_1
+    
+    LAYER_TYPE     INPUT_1
+    LAYER_TYPE     INPUT_2
+    LAYER_TYPE     OUTPUT_1
+    LAYER_TYPE     OUTPUT_2
+    
+    CONNECT E_1 CELL_1 SOMA_1 E_2 CELL_1 SOMA_1 SYNAPSE_1 0.3 0
+    
+END_COLUMN
+
+##################################################################################
+#
+# Layers
+#
+##################################################################################
+
+LAYER_SHELL
+    TYPE           LSHELL_1
+    LOWER          0
+    UPPER          100
+END_LAYER_SHELL
+
+LAYER
+	TYPE			INPUT_1
+	LAYER_SHELL	LSHELL_1
+	CELL_TYPE		CELL_1     200
+END_LAYER
+
+LAYER
+	TYPE			INPUT_2
+	LAYER_SHELL	LSHELL_1
+	CELL_TYPE		CELL_1     200
+END_LAYER
+
+LAYER
+	TYPE			OUTPUT_1
+	LAYER_SHELL	LSHELL_1
+	CELL_TYPE		CELL_1     100
+END_LAYER
+
+LAYER
+	TYPE			OUTPUT_2
+	LAYER_SHELL	LSHELL_1
+	CELL_TYPE		CELL_1     100
+END_LAYER
+
+##################################################################################
+#
+# Cells
+#
+##################################################################################
+
+CELL
+    TYPE            CELL_1
+    COMPARTMENT     SOMA  SOMA_1   0   0   0
+END_CELL
+
+##################################################################################
+#
+# Compartments
+#
+##################################################################################
+
+COMPARTMENT
+	TYPE              SOMA
+	SPIKESHAPE        SPIKE_DEFAULT
+	TAU_MEMBRANE      0.020     0.0
+	R_MEMBRANE        180	0
+	THRESHOLD         -47	0
+	VMREST            -65	0
+	LEAK_REVERSAL     0.0	0.0
+	LEAK_CONDUCTANCE  0.0	0.0
+END_COMPARTMENT
+
+##################################################################################
+#
+# Spikeshape
+#
+##################################################################################
+
+SPIKESHAPE 
+	TYPE		SPIKE_DEFAULT 
+	#VOLTAGES      -45 -40 -35 30 -35 -40 -45 -47 -49 -51	
+	VOLTAGES      -38 30 -38 -43  
+END_SPIKESHAPE
+
+##################################################################################
+#
+# Stim Inject
+#
+##################################################################################
+
+STIMULUS_INJECT
+	TYPE           STIM_INJECT_2
+	STIM_TYPE      STIM_1
+	INJECT         COLUMN_1 	INPUT_1 	CELL_1   CELL_1_SOMA   1.0
+END_STIMULUS_INJECT
+
+##################################################################################
+#
+# Stimulus
+#
+##################################################################################
+
+STIMULUS
+	TYPE                    STIM_1
+	MODE                    CURRENT
+	PATTERN                 FILE_BASED
+	FILENAME			    stim1.txt
+	TIME_INCREMENT          0.2
+	FREQ_COLS               80
+	CELLS_PER_FREQ          1
+	DYN_RANGE               0       80
+	TIMING                  EXACT
+	SAMESEED                NO
+	AMP_START               4
+	TIME_START              0
+	TIME_END                1.0
+END_STIMULUS
+
+##################################################################################
+#
+# Reports
+#
+##################################################################################
+
+REPORT
+	TYPE                REPORT_OUTPUT_1
+	CELLS               COLUMN_1 OUTPUT_1  CELL_1 CELL_1_SOMA
+	PROB                1
+	REPORT_ON           VOLTAGE
+	FILENAME            OUT_VOLTAGE1.txt
+	ASCII
+	FREQUENCY           1
+	TIME_START          0
+	TIME_END            30
+END_REPORT
+
+REPORT
+	TYPE                REPORT_OUTPUT_2
+	CELLS               COLUMN_1 OUTPUT_2  CELL_1 CELL_1_SOMA
+	PROB                1
+	REPORT_ON           VOLTAGE
+	FILENAME            OUT_VOLTAGE2.txt
+	ASCII
+	FREQUENCY           1
+	TIME_START          0
+	TIME_END            30
+END_REPORT
+
+##################################################################################
+#
+# Synapses
+#
+##################################################################################
+
+SYNAPSE
+	TYPE          SYNAPSE_1
+	SYN_PSG       PSG_E
+	SFD_LABEL	    NO_SFD
+	LEARN_LABEL   HEBBIAN_BOTH
+	MAX_CONDUCT   0.004
+	DELAY         0.005   0.010
+	SYN_REVERSAL  0       0
+	ABSOLUTE_USE  0.25    0.1
+END_SYNAPSE
+
+SYNAPSE
+	TYPE          SYNAPSE_2
+	SYN_PSG       PSG_I
+	SFD_LABEL	    NO_SFD
+	LEARN_LABEL   HEBBIAN_BOTH
+	MAX_CONDUCT   0.2
+	DELAY         0.005   0.005
+	SYN_REVERSAL  -80     0
+	ABSOLUTE_USE  0.25    0.1
+END_SYNAPSE
+
+SYN_PSG
+	TYPE           PSG_E
+	PSG_FILE       ./EPSG_Vogels_FSV1k_TAU05.inc
+END_SYN_PSG
+
+SYN_PSG
+	TYPE			PSG_I
+	PSG_FILE		./IPSG_Vogels_FSV1k_TAU10.inc
+END_SYN_PSG
+
+SYN_FACIL_DEPRESS
+        TYPE                    NO_SFD
+        SFD                     NONE
+END_SYN_FACIL_DEPRESS
+
+SYN_LEARNING
+        TYPE                    HEBBIAN_BOTH
+        LEARNING                BOTH
+        LEARNING_SHAPE          TRIANGLE
+END_SYN_LEARNING
+
