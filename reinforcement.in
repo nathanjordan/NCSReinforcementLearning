@@ -80,6 +80,10 @@ BRAIN
 	STIMULUS_INJECT STIM_INJECT_1
 
 	REPORT     REPORT_OUTPUT_1
+	REPORT     REPORT_OUTPUT_2
+	REPORT     REPORT_OUTPUT_3
+	REPORT     REPORT_OUTPUT_4
+       REPORT     REPORT_OUTPUT_5
 
 END_BRAIN
 
@@ -100,12 +104,20 @@ COLUMN
     TYPE           COLUMN_1
     COLUMN_SHELL   CSHELL_1
     
-    LAYER_TYPE     INPUT_1
-    LAYER_TYPE     INPUT_2
-    LAYER_TYPE     OUTPUT_1
-    LAYER_TYPE     OUTPUT_2
+    LAYER_TYPE     LAYER_1
+    #LAYER_TYPE     INPUT_1
+    #LAYER_TYPE     INPUT_2
+    #LAYER_TYPE     INHIB
+    #LAYER_TYPE     OUTPUT_1
+    #LAYER_TYPE     OUTPUT_2
     
-    CONNECT E_1 CELL_1 SOMA_1 E_2 CELL_1 SOMA_1 SYNAPSE_1 0.3 0
+#    CONNECT INPUT_1 CELL_E SOMA_E OUTPUT_1 CELL_E SOMA_E SYNAPSE_E 0.3 0
+#    CONNECT INPUT_1 CELL_E SOMA_E INHIB CELL_I SOMA_I SYNAPSE_E 0.3 0
+#    CONNECT INPUT_2 CELL_E SOMA_E OUTPUT_2 CELL_E SOMA_E SYNAPSE_E 0.3 0
+#    CONNECT INPUT_2 CELL_E SOMA_E INHIB CELL_I SOMA_I SYNAPSE_E 0.3 0
+#    CONNECT INHIB CELL_I SOMA_I OUTPUT_1 CELL_E SOMA_E SYNAPSE_I 0.3 0
+#    CONNECT INHIB CELL_I SOMA_I OUTPUT_2 CELL_E SOMA_E SYNAPSE_I 0.3 0
+
     
 END_COLUMN
 
@@ -122,28 +134,70 @@ LAYER_SHELL
 END_LAYER_SHELL
 
 LAYER
-	TYPE			INPUT_1
-	LAYER_SHELL	LSHELL_1
-	CELL_TYPE		CELL_1     200
+	TYPE			LAYER_1
+	LAYER_SHELL		LSHELL_1
+	CELL_TYPE		CELL_In1     200
+	CELL_TYPE		CELL_In2     200
+	CELL_TYPE		CELL_Out1     200
+	CELL_TYPE		CELL_Out2     200
+	CELL_TYPE		CELL_Inhib     200
+	CONNECT		
+				CELL_In1 		SOMA_IN1
+				CELL_Inhib		SOMA_I
+				SYNAPSE_E .7	3     
+	CONNECT		
+				CELL_In1      	SOMA_IN1
+				CELL_Out1     	SOMA_OUT1
+				SYNAPSE_E .7	3
+
+	CONNECT		
+				CELL_In2		SOMA_IN2
+				CELL_Inhib		SOMA_I
+				SYNAPSE_E .7	3
+
+	CONNECT		
+				CELL_In2		SOMA_IN2
+				CELL_Out2     	SOMA_OUT2
+				SYNAPSE_E .7	3
+	CONNECT		
+				CELL_Inhib		SOMA_I
+				CELL_Out1     	SOMA_OUT1
+				SYNAPSE_I .7	3
+	CONNECT		
+				CELL_Inhib		SOMA_I
+				CELL_Out2    		SOMA_OUT2
+				SYNAPSE_I .7	3
 END_LAYER
 
-LAYER
-	TYPE			INPUT_2
-	LAYER_SHELL	LSHELL_1
-	CELL_TYPE		CELL_1     200
-END_LAYER
-
-LAYER
-	TYPE			OUTPUT_1
-	LAYER_SHELL	LSHELL_1
-	CELL_TYPE		CELL_1     100
-END_LAYER
-
-LAYER
-	TYPE			OUTPUT_2
-	LAYER_SHELL	LSHELL_1
-	CELL_TYPE		CELL_1     100
-END_LAYER
+#LAYER
+#	TYPE			INPUT_1
+#	LAYER_SHELL	LSHELL_1
+#	CELL_TYPE		CELL_E     200
+#END_LAYER
+#
+#LAYER
+#	TYPE			INPUT_2
+#	LAYER_SHELL	LSHELL_1
+#	CELL_TYPE		CELL_E     200
+#END_LAYER
+#
+#LAYER
+#	TYPE			OUTPUT_1
+#	LAYER_SHELL	LSHELL_1
+#	CELL_TYPE		CELL_E     100
+#END_LAYER
+#
+#LAYER
+#	TYPE			OUTPUT_2
+#	LAYER_SHELL	LSHELL_1
+#	CELL_TYPE		CELL_E     100
+#END_LAYER
+#
+#LAYER
+#	TYPE			INHIB
+#	LAYER_SHELL	LSHELL_1
+#	CELL_TYPE		CELL_I     200
+#END_LAYER
 
 ##################################################################################
 #
@@ -152,8 +206,24 @@ END_LAYER
 ##################################################################################
 
 CELL
-    TYPE            CELL_1
-    COMPARTMENT     SOMA  SOMA_1   0   0   0
+    TYPE            CELL_In1
+    COMPARTMENT     SOMAE  SOMA_IN1   0   0   0
+END_CELL
+CELL
+    TYPE            CELL_In2
+    COMPARTMENT     SOMAE  SOMA_IN2   0   0   0
+END_CELL
+CELL
+    TYPE            CELL_Out1
+    COMPARTMENT     SOMAE  SOMA_OUT1   0   0   0
+END_CELL
+CELL
+    TYPE            CELL_Out2
+    COMPARTMENT     SOMAE  SOMA_OUT2  0   0   0
+END_CELL
+CELL
+    TYPE            CELL_Inhib
+    COMPARTMENT     SOMAI  SOMA_I   0   0   0
 END_CELL
 
 ##################################################################################
@@ -163,7 +233,7 @@ END_CELL
 ##################################################################################
 
 COMPARTMENT
-	TYPE              SOMA
+	TYPE              SOMAE
 	SPIKESHAPE        SPIKE_DEFAULT
 	TAU_MEMBRANE      0.020     0.0
 	R_MEMBRANE        180	0
@@ -172,7 +242,16 @@ COMPARTMENT
 	LEAK_REVERSAL     0.0	0.0
 	LEAK_CONDUCTANCE  0.0	0.0
 END_COMPARTMENT
-
+COMPARTMENT
+	TYPE              SOMAI
+	SPIKESHAPE        SPIKE_DEFAULT
+	TAU_MEMBRANE      0.020     0.0
+	R_MEMBRANE        180	0
+	THRESHOLD         -47	0
+	VMREST            -65	0
+	LEAK_REVERSAL     0.0	0.0
+	LEAK_CONDUCTANCE  0.0	0.0
+END_COMPARTMENT
 ##################################################################################
 #
 # Spikeshape
@@ -192,11 +271,16 @@ END_SPIKESHAPE
 ##################################################################################
 
 STIMULUS_INJECT
-	TYPE           STIM_INJECT_2
-	STIM_TYPE      STIM_1
-	INJECT         COLUMN_1 	INPUT_1 	CELL_1   CELL_1_SOMA   1.0
+	TYPE           STIM_INJECT_1
+	STIM_TYPE      TEST_STIM
+	INJECT         COLUMN_1 	LAYER_1 	CELL_In1   SOMA_IN1   1.0
 END_STIMULUS_INJECT
 
+STIMULUS_INJECT
+	TYPE           STIM_INJECT_2
+	STIM_TYPE      TEST_STIM
+	INJECT         COLUMN_1 	LAYER_1 	CELL_In2   SOMA_IN2   1.0
+END_STIMULUS_INJECT
 ##################################################################################
 #
 # Stimulus
@@ -219,6 +303,23 @@ STIMULUS
 	TIME_END                1.0
 END_STIMULUS
 
+STIMULUS
+	TYPE			TEST_STIM
+	MODE			CURRENT
+	PATTERN         	PULSE
+	TIME_INCREMENT		0.1
+	FREQ_COLS		100
+	CELLS_PER_FREQ		1
+	DYN_RANGE		0	20
+	TIMING          	EXACT
+	SAMESEED		NO
+	AMP_START		4
+        WIDTH           	.001
+        TIME_START      	0.001 0.3 0.6
+        TIME_END       		0.200 0.5 1.0
+       FREQ_START		12
+END_STIMULUS
+
 ##################################################################################
 #
 # Reports
@@ -227,7 +328,7 @@ END_STIMULUS
 
 REPORT
 	TYPE                REPORT_OUTPUT_1
-	CELLS               COLUMN_1 OUTPUT_1  CELL_1 CELL_1_SOMA
+	CELLS               COLUMN_1 LAYER_1  CELL_Out1 SOMA_OUT1
 	PROB                1
 	REPORT_ON           VOLTAGE
 	FILENAME            OUT_VOLTAGE1.txt
@@ -239,10 +340,43 @@ END_REPORT
 
 REPORT
 	TYPE                REPORT_OUTPUT_2
-	CELLS               COLUMN_1 OUTPUT_2  CELL_1 CELL_1_SOMA
+	CELLS               COLUMN_1 LAYER_1  CELL_Out2 SOMA_OUT2
 	PROB                1
 	REPORT_ON           VOLTAGE
 	FILENAME            OUT_VOLTAGE2.txt
+	ASCII
+	FREQUENCY           1
+	TIME_START          0
+	TIME_END            30
+END_REPORT
+REPORT
+	TYPE                REPORT_OUTPUT_3
+	CELLS               COLUMN_1 LAYER_1  CELL_In1 SOMA_IN1
+	PROB                1
+	REPORT_ON           VOLTAGE
+	FILENAME            IN_VOLTAGE1.txt
+	ASCII
+	FREQUENCY           1
+	TIME_START          0
+	TIME_END            30
+END_REPORT
+REPORT
+	TYPE                REPORT_OUTPUT_4
+	CELLS               COLUMN_1 LAYER_1  CELL_In2 SOMA_IN2
+	PROB                1
+	REPORT_ON           VOLTAGE
+	FILENAME            IN_VOLTAGE2.txt
+	ASCII
+	FREQUENCY           1
+	TIME_START          0
+	TIME_END            30
+END_REPORT
+REPORT
+	TYPE                REPORT_OUTPUT_5
+	CELLS               COLUMN_1 LAYER_1  CELL_Inhib SOMA_I
+	PROB                1
+	REPORT_ON           VOLTAGE
+	FILENAME            INHIB_VOLTAGE.txt
 	ASCII
 	FREQUENCY           1
 	TIME_START          0
@@ -256,7 +390,7 @@ END_REPORT
 ##################################################################################
 
 SYNAPSE
-	TYPE          SYNAPSE_1
+	TYPE          SYNAPSE_E
 	SYN_PSG       PSG_E
 	SFD_LABEL	    NO_SFD
 	LEARN_LABEL   HEBBIAN_BOTH
@@ -267,7 +401,7 @@ SYNAPSE
 END_SYNAPSE
 
 SYNAPSE
-	TYPE          SYNAPSE_2
+	TYPE          SYNAPSE_I
 	SYN_PSG       PSG_I
 	SFD_LABEL	    NO_SFD
 	LEARN_LABEL   HEBBIAN_BOTH
@@ -294,7 +428,7 @@ END_SYN_FACIL_DEPRESS
 
 SYN_LEARNING
         TYPE                    HEBBIAN_BOTH
-        LEARNING                BOTH
+        LEARNING                NONE
         LEARNING_SHAPE          TRIANGLE
 END_SYN_LEARNING
 
